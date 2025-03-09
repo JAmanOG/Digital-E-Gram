@@ -5,20 +5,45 @@ import { supabase } from '../lib/supabase';
 import { FileText, User, Bell, Clock, CheckCircle, AlertCircle, Calendar, BarChart2 } from 'lucide-react';
 import toast from 'react-hot-toast';
 import type { Application, Notification } from '../types/database';
+import { useLocation } from 'react-router-dom';
 
 export default function Dashboard() {
   const { user, connectionStatus } = useAuth();
   const [applications, setApplications] = useState<Application[]>([]);
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [loading, setLoading] = useState(true);
+  const location = useLocation();
 
   useEffect(() => {
     if (user && connectionStatus === 'connected') {
+      console.log('User:', user); 
+      
+      const fetchProfileData = async () => {
+        const { data: profileData, error: profileError } = await supabase
+          .from('profiles')
+          .select('*')
+          .eq('id', user.id)
+          .single();
+
+        if (profileError) {
+          console.error('Error fetching profile:', profileError);
+          toast.error('Failed to load profile data');
+        }
+
+        console.log('Profile data:', profileData);
+        if(profileData.role === 'staff'){
+          window.location.href = '/staff-dashboard';
+        }else if(profileData.role === 'admin'){
+          window.location.href = '/admin';
+        }
+      };
+      fetchProfileData();
+      
       fetchDashboardData();
     } else {
       setLoading(false);
     }
-  }, [user, connectionStatus]);
+  }, [user, connectionStatus,location.pathname]);
 
   const fetchDashboardData = async () => {
     try {

@@ -5,9 +5,11 @@ import toast from 'react-hot-toast';
 import { Clock, CheckCircle, AlertCircle, Search, Filter, FileText, Eye, User } from 'lucide-react';
 import { Navigate, Link, useNavigate } from 'react-router-dom';
 import type { Application } from '../types/database';
+import { useLocation } from 'react-router-dom';
 
 const StaffDashboard = () => {
   const { user, connectionStatus } = useAuth();
+  const location = useLocation();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
   const [applications, setApplications] = useState<Application[]>([]);
@@ -35,7 +37,7 @@ const StaffDashboard = () => {
   useEffect(() => {
     if (connectionStatus !== 'connected') return;
     fetchApplications();
-  }, [connectionStatus]);
+}, [connectionStatus, location.pathname]);
 
   const fetchApplications = async () => {
     setLoading(true);

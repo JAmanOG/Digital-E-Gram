@@ -5,6 +5,7 @@ import { supabase } from '../lib/supabase';
 import type { Application } from '../types/database';
 import { Clock, CheckCircle, AlertCircle, FileText, Search, Filter } from 'lucide-react';
 import toast from 'react-hot-toast';
+import { useLocation } from 'react-router-dom';
 
 export default function Applications() {
   const { user, connectionStatus } = useAuth();
@@ -12,6 +13,7 @@ export default function Applications() {
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState<string>('all');
+  const location = useLocation();
 
   useEffect(() => {
     if (user && connectionStatus === 'connected') {
@@ -19,7 +21,7 @@ export default function Applications() {
     } else {
       setLoading(false);
     }
-  }, [user, connectionStatus]);
+  }, [user, connectionStatus,location.pathname]);
 
   const fetchApplications = async () => {
     try {
